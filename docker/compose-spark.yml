@@ -40,6 +40,17 @@ services:
     networks:
       - spark-network
 
+  postgres-db:
+    image: "postgres:15-alpine"
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=test_view
+    volumes:
+      - ./database/tables.sql:/docker-entrypoint-initdb.d/00_init_db.sql
+
+
 networks:
   spark-network:
     driver: bridge
