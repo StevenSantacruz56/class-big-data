@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  spark-master:
+    image: bitnami/spark:latest
+    container_name: spark-master
+    hostname: spark-master
+    ports:
+      - "8080:8080" # Spark Web UI
+      - "7077:7077" # Spark Master Port
+    environment:
+      - SPARK_MODE=master
+      - SPARK_MASTER_HOST=spark-master
+      - PYSPARK_PYTHON=/usr/bin/python3.10
+      - PYSPARK_DRIVER_PYTHON=/usr/bin/python3.10
+    networks:
+      - spark-network
+
+  spark-worker:
+    image: bitnami/spark:latest
+    container_name: spark-worker
+    hostname: spark-worker
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - PYSPARK_PYTHON=/usr/bin/python3.10
+    depends_on:
+      - spark-master
+    networks:
+      - spark-network
+
+  spark-app:
+    image: bitnami/spark:latest
+    container_name: spark-app
+    hostname: spark-app
+    depends_on:
+      - spark-master
+      - spark-worker
+    command: [ "spark-submit", "--master", "spark://spark-master:7077" ]
+    networks:
+      - spark-network
+
+networks:
+  spark-network:
+    driver: bridge
