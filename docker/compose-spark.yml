@@ -13,9 +13,9 @@ services:
       - PYSPARK_PYTHON=/usr/bin/python3
       - PYSPARK_DRIVER_PYTHON=/usr/bin/python3
       - SPARK_MASTER_BIND_ADDRESS=0.0.0.0
-      - SPARK_CLASSPATH=/opt/bitnami/spark/jars/postgresql-42.7.5.jar
     volumes:
-      - ./postgresql-42.7.5.jar:/opt/bitnami/spark/jars/postgresql-42.7.5.jar
+      - ./postgresql-42.7.5.jar:/opt/spark/jars/postgresql-42.7.5.jar
+      - ./spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
     networks:
       - spark-network
 
@@ -30,9 +30,9 @@ services:
       - SPARK_WORKER_CORES=1
       - SPARK_LOCAL_IP=spark-worker
       - PYSPARK_PYTHON=/usr/bin/python3
-      - SPARK_CLASSPATH=/opt/bitnami/spark/jars/postgresql-42.7.5.jar
     volumes:
-      - ./postgresql-42.7.5.jar:/opt/bitnami/spark/jars/postgresql-42.7.5.jar
+      - ./postgresql-42.7.5.jar:/opt/spark/jars/postgresql-42.7.5.jar
+      - ./spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
     depends_on:
       - spark-master
     networks:
@@ -43,14 +43,15 @@ services:
     container_name: spark-app
     hostname: spark-app
     volumes:
-      - ./postgresql-42.7.5.jar:/opt/bitnami/spark/jars/postgresql-42.7.5.jar
+      - ./postgresql-42.7.5.jar:/opt/spark/jars/postgresql-42.7.5.jar
+      - ./spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
     environment:
-      - SPARK_CLASSPATH=/opt/bitnami/spark/jars/postgresql-42.7.5.jar
+      - SPARK_CLASSPATH=/opt/spark/jars/postgresql-42.7.5.jar
     command: >
       spark-submit
       --master spark://spark-master:7077
-      --driver-class-path /opt/bitnami/spark/jars/postgresql-42.7.5.jar
-      --jars /opt/bitnami/spark/jars/postgresql-42.7.5.jar
+      --driver-class-path /opt/spark/jars/postgresql-42.7.5.jar
+      --jars /opt/spark/jars/postgresql-42.7.5.jar
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -84,7 +85,8 @@ services:
     ports:
       - "8888:8888"  # Jupyter Notebook
     volumes:
-      - ./examples_spark:/home/examples_spark
+      - ./postgresql-42.7.5.jar:/opt/spark/jars/postgresql-42.7.5.jar
+      - ../examples_spark:/home/examples_spark
     environment:
       - JUPYTER_TOKEN=mi_token
       - SPARK_MASTER=spark://spark-master:7077

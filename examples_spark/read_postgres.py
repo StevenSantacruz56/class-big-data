@@ -27,8 +27,8 @@ connection_properties = {
 spark = SparkSession.builder \
     .appName("ReadPostgresView") \
     .master("spark://localhost:7077") \
-    .config("spark.driver.extraClassPath", "/opt/bitnami/spark/jars/postgresql-42.7.5.jar") \
-    .config("spark.jars", "/opt/bitnami/spark/jars/postgresql-42.7.5.jar") \
+    .config("spark.driver.extraClassPath", "/opt/spark/jars/postgresql-42.7.5.jar") \
+    .config("spark.executor.extraClassPath", "/opt/spark/jars/postgresql-42.7.5.jar") \
     .getOrCreate()
 
 # --- Leer datos de la vista "posts_view" ---
